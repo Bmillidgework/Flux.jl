@@ -123,9 +123,12 @@ function (BN::BatchNorm)(x)
   γ, β = BN.γ, BN.β
   dims = length(size(x))
   channels = size(x, dims-1)
-  affine_shape = ones(Int, dims)
-  affine_shape[end-1] = channels
-  m = prod(size(x)[1:end-2]) * size(x)[end]
+  affine_shape = let dims=dims, channels=channels
+    ntuple(i->i == dims - 1 ? channels : 1, dims)
+  end
+  m = let sz = size(x)
+    prod(ntuple(i->sz[i], dims-2)) * sz[end]
+  end
 
   if !BN.active
     μ = reshape(BN.μ, affine_shape...)
