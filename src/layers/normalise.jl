@@ -124,21 +124,21 @@ function (BN::BatchNorm)(x)
     μ = reshape(BN.μ, affine_shape...)
     σ² = reshape(BN.σ², affine_shape...)
   else
-    T = eltype(x)
+    T = eltype(data(x))
 
-    ϵ = data(convert(T, BN.ϵ))
     axes = [1:dims-2; dims] # axes to reduce along (all but channels axis)
     μ = mean(x, dims = axes)
-    σ² = sum((x .- μ) .^ 2, dims = axes) ./ m
+    meansub = (x .- μ)
+    σ² = mean(meansub .* meansub, dims = axes)
 
     # update moving mean/std
-    mtm = data(convert(T, BN.momentum))
-    BN.μ = (1 - mtm) .* BN.μ .+ mtm .* reshape(data(μ), :)
-    BN.σ² = ((1 - mtm) .* BN.σ² .+ mtm .* reshape(data(σ²), :) .* m ./ (m - 1))
+    mtm = convert(T, data(BN.momentum))
+    BN.μ = (1 - mtm) .* BN.μ .+ mtm .* data(reshape(μ, :))
+    BN.σ² = ((1 - mtm) .* BN.σ² .+ mtm .* data(reshape(σ², :)) .* m ./ (m - 1))
   end
 
-  let λ = BN.λ
-    λ.(reshape(γ, affine_shape...) .* ((x .- μ) ./ sqrt.(σ² .+ BN.ϵ)) .+ reshape(β, affine_shape...))
+  let λ = BN.λ, ϵ = eltype(data(σ²))(BN.ϵ)
+    λ.(reshape(γ, affine_shape...) .* ((x .- μ) ./ sqrt.(σ² .+ ϵ)) .+ reshape(β, affine_shape...))
   end
 end
 
