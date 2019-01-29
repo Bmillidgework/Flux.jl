@@ -112,12 +112,12 @@ RNN(a...; ka...) = Recur(RNNCell(a...; ka...))
 
 # LSTM
 
-mutable struct LSTMCell{A,V}
+struct LSTMCell{A,B,V,W,Z}
   Wi::A
-  Wh::A
+  Wh::B
   b::V
-  h::V
-  c::V
+  h::W
+  c::Z
 end
 
 function LSTMCell(in::Integer, out::Integer;
