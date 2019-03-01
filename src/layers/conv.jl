@@ -103,8 +103,6 @@ function (c::ConvTranspose)(x::AbstractArray)
   I = (size(x)[1:end-2] .- 1).*c.stride .+ 1 .+ (size(c.weight)[1:end-2] .- 1).*c.dilation .- 2 .* c.pad
   C_in = size(c.weight)[end-1]
   batch_size = size(x)[end]
-  @show I
-  @show size(x)
   # Create DenseConvDims() that looks like the corresponding conv()
   cdims = DenseConvDims((I..., C_in, batch_size), size(c.weight);
       stride=c.stride,
