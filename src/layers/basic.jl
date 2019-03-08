@@ -72,7 +72,7 @@ Dense(W, b) = Dense(W, b, identity)
 
 function Dense(in::Integer, out::Integer, σ = identity;
                initW = glorot_uniform, initb = zeros)
-  return Dense(param(initW(out, in)), param(initb(out)), σ)
+  return Dense(initW(out, in), initb(out), σ)
 end
 
 @treelike Dense
@@ -104,7 +104,7 @@ struct Diagonal{T}
 end
 
 Diagonal(in::Integer; initα = ones, initβ = zeros) =
-  Diagonal(param(initα(in)), param(initβ(in)))
+  Diagonal(initα(in), initβ(in))
 
 @treelike Diagonal
 

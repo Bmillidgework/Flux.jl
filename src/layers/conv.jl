@@ -41,7 +41,7 @@ Conv(w::AbstractArray{T,N}, b::AbstractVector{T}, σ = identity;
 
 Conv(k::NTuple{N,Integer}, ch::Pair{<:Integer,<:Integer}, σ = identity;
      init = glorot_uniform,  stride = 1, pad = 0, dilation = 1) where N =
-  Conv(param(init(k..., ch...)), param(zeros(ch[2])), σ,
+  Conv(init(k..., ch...), zeros(ch[2]), σ,
        stride = stride, pad = pad, dilation = dilation)
 
 @treelike Conv
@@ -91,7 +91,7 @@ ConvTranspose(w::AbstractArray{T,N}, b::AbstractVector{T}, σ = identity;
 
 ConvTranspose(k::NTuple{N,Integer}, ch::Pair{<:Integer,<:Integer}, σ = identity;
               init = glorot_uniform, stride = 1, pad = 0, dilation = 1) where N =
-ConvTranspose(param(init(k..., reverse(ch)...)), param(zeros(ch[2])), σ,
+ConvTranspose(init(k..., reverse(ch)...), zeros(ch[2]), σ,
               stride = stride, pad = pad, dilation = dilation)
 
 @treelike ConvTranspose
@@ -142,13 +142,13 @@ DepthwiseConv(w::AbstractArray{T,N}, b::AbstractVector{T}, σ = identity;
 
 DepthwiseConv(k::NTuple{N,Integer}, ch::Integer, σ = identity; init = glorot_uniform,
      stride = 1, pad = 0) where N =
-  DepthwiseConv(param(init(k..., 1, ch)), param(zeros(ch)), σ,
+  DepthwiseConv(init(k..., 1, ch), zeros(ch), σ,
        stride = stride, pad = pad)
 
 DepthwiseConv(k::NTuple{N,Integer}, ch::Pair{<:Integer,<:Integer}, σ = identity; init = glorot_uniform,
      stride::NTuple{N,Integer} = map(_->1,k),
      pad::NTuple{N,Integer} = map(_->0,k)) where N =
-  DepthwiseConv(param(init(k..., ch[2], ch[1])), param(zeros(ch[2]*ch[1])), σ,
+  DepthwiseConv(init(k..., ch[2], ch[1]), zeros(ch[2] * ch[1]), σ,
        stride = stride, pad = pad)
 
 @treelike DepthwiseConv
