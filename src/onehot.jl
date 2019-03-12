@@ -59,11 +59,6 @@ onecold(y::AbstractVector, labels = 1:length(y)) = labels[Base.argmax(y)]
 onecold(y::AbstractMatrix, labels...) =
   dropdims(mapslices(y -> onecold(y, labels...), y, dims=1), dims=1)
 
-function argmax(xs...)
-  Base.depwarn("`argmax(...) is deprecated, use `onecold(...)` instead.", :argmax)
-  return onecold(xs...)
-end
-
 # TODO probably still want this as a custom adjoint Zygote
 # onecold(x::TrackedVector, l...) = onecold(data(x), l...)
 # onecold(x::TrackedMatrix, l...) = onecold(data(x), l...)
