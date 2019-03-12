@@ -48,9 +48,24 @@ function update!(opt, ::Nothing, gs::Globals)
     if inplace(x, x̄)
       update!(opt, x, x̄)
     else
-      isconst(id.mod, id.name) && error("Can't update constant $id")
-      x′, state = update(opt, x, x̄)
-      setglobal!(id.mod, id.name, x′)
+      if isconst(id.mod, id.name)
+        id.mod == Main && error("Can't update constant $id")
+      else
+        x′, state = update(opt, x, x̄)
+        setglobal!(id.mod, id.name, x′)
+      end
     end
+  end
+end
+
+# Package Integration
+
+using Requires
+
+@init @require Colors="5ae59095-9a9b-59fe-a467-6f913c188581" begin
+  function update(opt, x::Colors.RGB{T}, x̄::NamedTuple) where T
+    Colors.RGB{T}(clamp(update(opt, x.r, x̄.r)[1], 0, 1),
+                  clamp(update(opt, x.g, x̄.g)[1], 0, 1),
+                  clamp(update(opt, x.b, x̄.b)[1], 0, 1)), nothing
   end
 end
