@@ -1,15 +1,25 @@
 using Juno
-import Zygote: Params, gradient
+import Zygote: Context, Params, _forward, gradient
 
-function update!(opt, x, x̄)
-  update!(x, -apply!(opt, x, x̄))
+# Training step
+
+function losscheck(x)
+  x isa Real || error("Function output is not scalar")
+  isinf(x) && error("Loss is infinite")
+  isnan(x) && error("Loss is NaN")
 end
 
-function update!(opt, xs::Params, gs)
-  for x in xs
-    update!(opt, x, gs[x])
-  end
+function step!(f, opt, x...)
+  cx = Context()
+  y, ∂f = _forward(cx, f, x...)
+  losscheck(y)
+  f̄ = ∂f(1)[1] # TODO update f
+  ḡ = Globals(cx)
+  update!(opt, nothing, ḡ)
+  return y
 end
+
+# Training loop
 
 # Callback niceties
 call(f, xs...) = f(xs...)

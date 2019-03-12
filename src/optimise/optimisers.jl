@@ -4,8 +4,6 @@ using MacroTools: @forward
 
 const ϵ = 1e-8
 
-# TODO: should use weak refs
-
 """
     Descent(η)
 
@@ -18,8 +16,8 @@ end
 
 Descent() = Descent(0.1)
 
-function apply!(o::Descent, x, Δ)
-  Δ .*= o.eta
+function apply(o::Descent, x, x̄, state = nothing)
+  x̄ .* o.eta, state
 end
 
 """
